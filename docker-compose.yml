@@ -1,0 +1,44 @@
+services:
+  aegis:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${AEGIS_BIND_ADDRESS:-127.0.0.1}:${AEGIS_PORT:-8000}:8000"
+    environment:
+      AEGIS_DB_PATH: /app/data/aegis.db
+      AEGIS_RAW_OBJECT_DIR: /app/data/raw
+      AEGIS_CORS_ORIGINS: "${AEGIS_CORS_ORIGINS:-}"
+      AEGIS_ACCESS_TOKEN: "${AEGIS_ACCESS_TOKEN:?Set AEGIS_ACCESS_TOKEN in a local .env file}"
+      NASA_FIRMS_MAP_KEY: "${NASA_FIRMS_MAP_KEY:-}"
+      OLLAMA_BASE_URL: "${OLLAMA_BASE_URL:-http://host.docker.internal:11434}"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-qwen2.5:3b}"
+      NASA_API_KEY: "${NASA_API_KEY:-}"
+      EARTHDATA_TOKEN: "${EARTHDATA_TOKEN:-}"
+      AEGIS_EXPORT_DIR: /app/exports
+      AEGIS_SCIENCE_CATALOG_DB: /app/exports/MORS_Science_Catalog.sqlite
+    volumes:
+      - aegis-data:/app/data
+      - ./outputs/01a1ad99-40be-7221-9b19-3844f79959e9/raw:/app/exports/raw:ro
+      - ./outputs/01a1ad99-40be-7221-9b19-3844f79959e9/MORS_DATASET_MANIFEST.json:/app/exports/MORS_DATASET_MANIFEST.json:ro
+      - ./outputs/01a1ad99-40be-7221-9b19-3844f79959e9/MORS_Space_Astronomy_Fire_Raw_Database.xlsx:/app/exports/MORS_Space_Astronomy_Fire_Raw_Database.xlsx:ro
+      - ./outputs/01a1ad99-40be-7221-9b19-3844f79959e9/MORS_Raw_Source_Artifacts.zip:/app/exports/MORS_Raw_Source_Artifacts.zip:ro
+      - ./outputs/01a1ad99-40be-7221-9b19-3844f79959e9/MORS_Science_Catalog.sqlite:/app/exports/MORS_Science_Catalog.sqlite:ro
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 2g
+    cpus: 2.0
+    pids_limit: 256
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  aegis-data:

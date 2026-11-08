@@ -1,0 +1,23 @@
+# Local secrets and environment configuration
+.env
+.env.*
+*.env
+*.env.txt
+.env.txt
+!.env.example
+
+# Local scientific uploads and databases
+data/uploads/
+data/raw/
+data/*.db
+data/*.db-shm
+data/*.db-wal
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.windows-build-venv/
+build/windows/
+distribution/
